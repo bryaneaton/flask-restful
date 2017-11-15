@@ -2,7 +2,7 @@ import sqlite3
 from flask_restful import Resource, reqparse
 from flask_jwt import jwt_required
 
-
+# Section 5
 class Item(Resource):
     parser = reqparse.RequestParser()  # only allow price changes, no name changes allowed
     parser.add_argument('price', type=float, required=True, help='This field cannot be left blank')
