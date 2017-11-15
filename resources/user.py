@@ -23,4 +23,4 @@ class UserRegister(Resource):
         connection.commit()
         connection.close()
 
-        return {'message': 'UserModel has been created successfully.'}, 201
+        return {'message': '{} has been created successfully.'.format(data['username'])}, 201
