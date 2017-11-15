@@ -10,7 +10,7 @@ class Item(Resource):
     @classmethod
     def find_by_name(cls, name):
         connection = sqlite3.connect('data.db')
-        select_items = 'select * from items where name = ?'
+        select_items = 'select name, price from items where name = ?'
 
         cursor = connection.cursor()
         result = cursor.execute(select_items, (name,))  # Single value Tuple
@@ -18,7 +18,7 @@ class Item(Resource):
         connection.close()
 
         if row:
-            return {'item': {'name': row[1], 'price': row[2]}}
+            return {'item': {'name': row[0], 'price': row[1]}}
 
     # @jwt_required()  # Requires dat token
     def get(self, name):
@@ -34,49 +34,95 @@ class Item(Resource):
 
         data = Item.parser.parse_args()
         item = {'name': name, 'price': data['price']}
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
 
-        query = "Insert into items (name, price) values (?,?)"
-        cursor.execute(query, (item['name'], item['price']))
-        connection.commit()
-        connection.close()
+        try:
+            self.insert(item)
+        except:
+            return {"message": "An error occurred inserting the item."}, 500
         return item, 201
 
-    # @jwt_required()
+        # @jwt_required()
     def delete(self, name):
-        global items
-        # Overwrite current Items list with new list except the deleted
-        # Must use global keyword to change variable from private to global
 
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
+            # Overwrite current Items list with new list except the deleted
+            # Must use global keyword to change variable from private to global
+        try:
+            self.remove(name)
+            return {'message': '{} deleted'.format(name)}, 201
+        except:
+            return {"message": "There's been a problem deleting, exiting"}, 500
 
-        query = "delete from items where name = ?"
-        cursor.execute(query, (name,))
-
-        connection.commit()
-        connection.close()
-
-        return {'message': '{} deleted'.format(name)}
         # return {'message': 'item not deleted, does not exist'}
 
     # @jwt_required()
     def put(self, name):
         # Create or Update
         data = Item.parser.parse_args()
-        item = next(filter(lambda x: x['name'] == name, items), None)
+        item = self.find_by_name(name)
+        update_item = {'name': name, 'price': data['price']}
+
         if item is None:
-            # Create
-            item = {'name': name, 'price': data['price']}
-            items.append(item)
+            try:
+                self.insert(update_item)
+            except:
+                return {"message": "an error occured on insert"}, 500
+
         else:
-            # Update
-            item.update(data)
+            self.update(update_item)
+
         return item, 201
+    @classmethod
+    def insert(cls, item):
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
+
+        query = "insert into items (price, name) Values(?,?)"
+        cursor.execute(query, (item['price'], item['name']))
+
+        connection.commit()
+        connection.close()
+
+    @classmethod
+    def update(cls, item):
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
+
+        query = "update items set price = ? where name = ?"
+        cursor.execute(query, (item['price'], item['name']))
+
+        connection.commit()
+        connection.close()
+
+    @classmethod
+    def remove(cls, item):
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
+
+        query = "delete from items where name = ?"
+        cursor.execute(query, (item,))
+
+        connection.commit()
+        connection.close()
+
 
 
 class ItemList(Resource):
     # @jwt_required()
     def get(self):
+        return self.retreiveMany()
+
+    @classmethod
+    def retreiveMany(cls):
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
+
+        query = "select name, price from items"
+        result = cursor.execute(query)
+
+        # TODO: retreive item list
+        items = []
+        for row in result:
+            items.append({'name':row[0], 'price':row[1]})
+        connection.close()
+
         return {'items': items}
