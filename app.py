@@ -7,7 +7,7 @@ from resources.user import UserRegister
 from security import authenticate, identity
 
 app = Flask(__name__)
-app.config['PROPAGATE_EXCEPTIONS'] = True  # To allow flask propagating exception even if debug is set to false on app
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'jose'
 api = Api(app)
 
@@ -18,4 +18,6 @@ api.add_resource(ItemList, '/items')
 api.add_resource(UserRegister, '/register')
 
 if __name__ == '__main__':
+    from db import db  #Avoid circular import
+    db.init_app(app)
     app.run(debug=True)  # important to mention debug=True
