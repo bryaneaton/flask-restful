@@ -1,6 +1,6 @@
-import sqlite3
 from flask_restful import Resource, reqparse
 from models.user import UserModel
+
 
 class UserRegister(Resource):
     parser = reqparse.RequestParser()  # only allow price changes, no name changes allowed
@@ -13,14 +13,7 @@ class UserRegister(Resource):
         if UserModel.find_by_username(data['username']):
             return {'message': 'UserModel has already been created, aborting.'}, 400
 
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
+        user = UserModel(**data)
+        user.save_to_db()
 
-        query = "Insert into users values (NULL,?,?)"
-
-        cursor.execute(query, (data['username'], data['password']))
-
-        connection.commit()
-        connection.close()
-
-        return {'message': '{} has been created successfully.'.format(data['username'])}, 201
+        return {'message': 'user has been created successfully.'}, 201
