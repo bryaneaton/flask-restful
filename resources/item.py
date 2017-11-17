@@ -24,7 +24,7 @@ class Item(Resource):
         item = ItemModel(name, data['price'])
 
         try:
-            item.insert()
+            item.save_to_db()
         except:
             return {"message": "An error occurred inserting the item."}, 500
         return item.json(), 201
@@ -32,38 +32,29 @@ class Item(Resource):
     @jwt_required()
     def delete(self, name):
 
-        # Overwrite current Items list with new list except the deleted
-        # Must use global keyword to change variable from private to global
-        try:
-            ItemModel.remove(name)
-            return {'message': '{} deleted'.format(name)}, 201
-        except:
-            return {"message": "There's been a problem deleting, exiting"}, 500
+        item = ItemModel.find_by_name(name)
+        if item:
+            item.delete_from_db()
 
-            # return {'message': 'item not deleted, does not exist'}
+            return {'message': 'item has been deleted'}
 
     @jwt_required()
     def put(self, name):
         # Create or Update
         data = Item.parser.parse_args()
         item = ItemModel.find_by_name(name)
-        update_item = ItemModel(name,data['price'])
 
         if item is None:
-            try:
-                update_item.insert()
-            except:
-                return {"message": "an error occured on insert"}, 500
-
+            item = ItemModel(name, data['price'])
         else:
-            update_item.update()
+            item.price = data['price']
 
-        return update_item.json(), 201
+        item.save_to_db()
+
+        return item.json()
 
 
 class ItemList(Resource):
     @jwt_required()
     def get(self):
         return ItemModel.retreiveMany()
-
-
