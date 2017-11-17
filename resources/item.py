@@ -57,4 +57,5 @@ class Item(Resource):
 class ItemList(Resource):
     @jwt_required()
     def get(self):
-        return ItemModel.retreiveMany()
+        return {'items': [item.json() for item in ItemModel.query.all()]} #More pythonic
+        ##return {'items': list(map(lambda x: x.json(), ItemModel.query.all()))} #Alternate Lambda way

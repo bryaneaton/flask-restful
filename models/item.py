@@ -1,4 +1,3 @@
-import sqlite3
 from db import db
 
 
@@ -20,28 +19,10 @@ class ItemModel(db.Model):
     def find_by_name(cls, name):
         return cls.query.filter_by(name=name).first()  # simple TOP 1 select
 
-    def save_to_db(self):  #Upserting data
+    def save_to_db(self):  # Upserting data
         db.session.add(self)
-        db.session.commit() #Balla
-
+        db.session.commit()  # Balla
 
     def delete_from_db(self):
         db.session.delete(self)
         db.session.commit()
-
-
-    @classmethod
-    def retreiveMany(cls):
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
-
-        query = "select name, price from items"
-        result = cursor.execute(query)
-
-        # TODO: retreive item list
-        items = []
-        for row in result:
-            items.append({'name': row[0], 'price': row[1]})
-        connection.close()
-
-        return {'items': items}
