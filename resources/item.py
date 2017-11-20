@@ -7,6 +7,7 @@ from models.item import ItemModel
 class Item(Resource):
     parser = reqparse.RequestParser()  # only allow price changes, no name changes allowed
     parser.add_argument('price', type=float, required=True, help='This field cannot be left blank')
+    parser.add_argument('store_id', type=int, required=True, help='Must enter the store id')
 
     @jwt_required()  # Requires dat token
     def get(self, name):
@@ -21,7 +22,7 @@ class Item(Resource):
             return {'message': "An item with name '{}' already exists.".format(name)}, 400
 
         data = Item.parser.parse_args()
-        item = ItemModel(name, data['price'])
+        item = ItemModel(name, data['price'], data['store_id'])
 
         try:
             item.save_to_db()
