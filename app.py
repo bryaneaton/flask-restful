@@ -1,4 +1,5 @@
 import pyodbc
+import psycopg2
 from flask import Flask
 from flask_jwt import JWT
 from flask_restful import Api
@@ -15,11 +16,10 @@ from security import authenticate, identity
 
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db' # SQL lite connection string
-app.config['SQLALCHEMY_DATABASE_URI'] = "mssql+pyodbc://dsuser:dsu3r_123@CTG-SQLLAB01:1433/ITQ?driver=SQL+Server+Native+Client+10.0" #SQL Server Credentials
-# TODO: Add Postgres SQL Example
-
+# app.config['SQLALCHEMY_DATABASE_URI'] = "mssql+pyodbc://dsuser:dsu3r_123@CTG-SQLLAB01:1433/ITQ?driver=SQL+Server+Native+Client+10.0" #SQL Server Credentials
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql+psycopg2://alexis:Alexis2014@localhost/custom"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = 'jose'
+app.secret_key = 'Dese.Decent.Pups.BOOYO0OST'
 api = Api(app)
 
 @app.before_first_request
