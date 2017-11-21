@@ -1,20 +1,12 @@
-import pyodbc
-import psycopg2
-
-
 from flask import Flask
 from flask_jwt import JWT
 from flask_restful import Api
 
+from config import postgresqlConfig
 from resources.item import Item, ItemList
-from resources.user import UserRegister
 from resources.store import Store, StoreList
+from resources.user import UserRegister
 from security import authenticate, identity
-from config import mssqlConfig, postgresqlConfig
-
-# params = urllib.quote_plus("DRIVER={SQL Server Native Client 11.0};SERVER=CTG-SQLLAB01>;DATABASE=CTG_Custom;UID=dsuser;PWD=dsu3r_123;driver=[SQL Server]")
-# SQLALCHEMY_DATABASE_URI = "mssql+pyodbc:///?odbc_connect=%s" % params
-
 
 app = Flask(__name__)
 
