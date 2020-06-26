@@ -6,9 +6,9 @@ mssql = {'host': 'dbhost',
          'passwd': 'dbPwd',
          'db': 'db'}
 
-postgresql = {'host': 'dbhost',
-         'user': 'dbuser',
-         'passwd': 'dbPwd',
+postgresql = {'host': '192.168.1.23',
+         'user': 'postgres',
+         'passwd': 'magical_password',
          'db': 'db'}
 
 

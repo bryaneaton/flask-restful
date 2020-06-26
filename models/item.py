@@ -12,7 +12,6 @@ class ItemModel(db.Model):
     store = db.relationship('StoreModel')
 
 
-
     def __init__(self, name, price, store_id):
         self.name = name
         self.price = price
