@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from flask_restful import Resource, reqparse
+from flask_restful import Resource
 from app.models.store import StoreModel
 
 
