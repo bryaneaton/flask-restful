@@ -26,7 +26,7 @@ COPY --from=builder-image /home/myuser/venv /home/myuser/venv
 
 USER myuser
 RUN mkdir /home/myuser/code
-WORKDIR /home/myuser/code
+WORKDIR /home/myuser/code/app
 COPY . .
 
 EXPOSE 5000
@@ -37,7 +37,11 @@ ENV PYTHONUNBUFFERED=1
 # activate virtual environment
 ENV VIRTUAL_ENV=/home/myuser/venv
 ENV PATH="/home/myuser/venv/bin:$PATH"
-
+ENV FLASK_APP=app:app.py
+ENV FLASK_ENV=development
+ENV FLASK_DEBUG=1
 # /dev/shm is mapped to shared memory and should be used for gunicorn heartbeat
 # this will improve performance and avoid random freezes
-CMD ["gunicorn","-b", "0.0.0.0:5000", "-w", "4", "-k", "gevent", "--worker-tmp-dir", "/dev/shm", "app:app"]
+CMD ["python", "-m flask", "run"]
+
+# CMD ["gunicorn","-b", "0.0.0.0:5000", "-w", "4", "-k", "gevent", "--worker-tmp-dir", "/dev/shm", "app:app"]

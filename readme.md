@@ -4,3 +4,5 @@ A quick project i created while following Jose Salvatierra's excellent flask tut
 
 #### Start Postgres or SQL Server db and update credentials on `config.py`, SQL alchemy will create the database objects. 
 
+#### Add user 
+curl -d "username=user1&password=abcd" -X POST http://localhost:5000/register
