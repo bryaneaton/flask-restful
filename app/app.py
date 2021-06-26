@@ -1,12 +1,14 @@
+#!/usr/bin/env python3
+
 from flask import Flask
 from flask_jwt import JWT
 from flask_restful import Api
 
-from config import postgresqlConfig
-from resources.item import Item, ItemList
-from resources.store import Store, StoreList
-from resources.user import UserRegister
-from security import authenticate, identity
+from app.resources.item import Item, ItemList
+from app.resources.store import Store, StoreList
+from app.resources.user import UserRegister
+from app.config import postgresqlConfig
+from app.security import authenticate, identity
 
 app = Flask(__name__)
 
@@ -28,7 +30,7 @@ api.add_resource(Store, '/store/<string:name>')
 api.add_resource(StoreList, '/stores')
 
 if __name__ == '__main__':
-    from db import db  #Avoid circular import
+    from db import db
     db.init_app(app)
     app.run(debug=True)  # important to mention debug=True
 

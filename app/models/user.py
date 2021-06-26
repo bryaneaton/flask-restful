@@ -1,4 +1,8 @@
-from db import db
+#!/user/bin/env python
+
+
+from app.db import db
+
 
 class UserModel(db.Model):
     __tablename__ = 'users'

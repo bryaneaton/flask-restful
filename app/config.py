@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 
 mssql = {'host': 'dbhost',
@@ -6,7 +6,7 @@ mssql = {'host': 'dbhost',
          'passwd': 'dbPwd',
          'db': 'db'}
 
-postgresql = {'host': '192.168.1.23',
+postgresql = {'host': '0.0.0.0',
          'user': 'postgres',
          'passwd': 'magical_password',
          'db': 'db'}
