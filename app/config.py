@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-
+# -*- coding: utf-8 -*-
+# standard python imports
 
 mssql = {'host': 'dbhost',
          'user': 'dbuser',

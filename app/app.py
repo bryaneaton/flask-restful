@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# standard python imports
 
 from flask import Flask
 from flask_jwt_extended import JWTManager

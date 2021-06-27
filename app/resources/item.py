@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-
+# -*- coding: utf-8 -*-
+# standard python imports
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import jwt_required
 from app.models.item import ItemModel
 from app.util.logz import create_logger
 
 
-
-# Section 6
 class Item(Resource):
-
     parser = reqparse.RequestParser()  # only allow price changes, no name changes allowed
-    parser.add_argument('price', type=float, required=True, help='This field cannot be left blank')
-    parser.add_argument('store_id', type=int, required=True, help='Must enter the store id')
+    parser.add_argument('price', type=float, required=True,
+                        help='This field cannot be left blank')
+    parser.add_argument('store_id', type=int, required=True,
+                        help='Must enter the store id')
 
     def __init__(self):
         self.logger = create_logger()
@@ -30,7 +30,8 @@ class Item(Resource):
         self.logger.info(f'parsed args: {Item.parser.parse_args()}')
 
         if ItemModel.find_by_name(name):
-            return {'message': "An item with name '{}' already exists.".format(name)}, 400
+            return {'message': "An item with name '{}' already exists.".format(
+                name)}, 400
         data = Item.parser.parse_args()
         item = ItemModel(name, data['price'], data['store_id'])
 
@@ -68,5 +69,6 @@ class Item(Resource):
 class ItemList(Resource):
     @jwt_required()
     def get(self):
-        return {'items': [item.json() for item in ItemModel.query.all()]} #More pythonic
+        return {
+            'items': [item.json() for item in ItemModel.query.all()]}  # More pythonic
         ##return {'items': list(map(lambda x: x.json(), ItemModel.query.all()))} #Alternate Lambda way

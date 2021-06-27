@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# standard python imports
+
 from flask_restful import Resource, reqparse
 from flask import jsonify
 from flask_jwt_extended import create_access_token, jwt_required
@@ -7,7 +10,6 @@ from app.models.user import UserModel
 from app.util.encoder import AlchemyEncoder
 import json
 from app.util.logz import create_logger
-
 
 
 class User(Resource):
@@ -29,7 +31,8 @@ class User(Resource):
         if not user or not user.check_password(password):
             return {'message': 'Wrong username or password.'}, 401
         # Notice that we are passing in the actual sqlalchemy user object here
-        access_token = create_access_token(identity=json.dumps(user, cls=AlchemyEncoder))
+        access_token = create_access_token(
+            identity=json.dumps(user, cls=AlchemyEncoder))
         return jsonify(access_token=access_token)
 
     @jwt_required()  # Requires dat token

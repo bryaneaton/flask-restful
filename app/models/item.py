@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# standard python imports
+
 from app.db import db
 
 
@@ -10,7 +14,6 @@ class ItemModel(db.Model):
 
     store_id = db.Column(db.Integer, db.ForeignKey('stores.id'))
     store = db.relationship('StoreModel')
-
 
     def __init__(self, name, price, store_id):
         self.name = name
