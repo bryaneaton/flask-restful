@@ -3,9 +3,13 @@
 from flask_restful import Resource
 from app.models.store import StoreModel
 from flask_jwt_extended import jwt_required
+from app.util.logz import create_logger
 
 
 class Store(Resource):
+
+    def __init__(self):
+        self.logger = create_logger()
 
     def get(self, name):
         store = StoreModel.find_by_name(name)

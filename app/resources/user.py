@@ -6,8 +6,14 @@ from flask_jwt_extended import current_user
 from app.models.user import UserModel
 from app.util.encoder import AlchemyEncoder
 import json
+from app.util.logz import create_logger
+
+
 
 class User(Resource):
+    def __init__(self):
+        self.logger = create_logger()
+
     parser = reqparse.RequestParser()  # only allow price changes, no name changes allowed
     parser.add_argument('username', type=str, required=True,
                         help='This field cannot be left blank')
@@ -37,6 +43,9 @@ class User(Resource):
 
 
 class UserRegister(Resource):
+    def __init__(self):
+        self.logger = create_logger()
+
     parser = reqparse.RequestParser()  # only allow price changes, no name changes allowed
     parser.add_argument('username', type=str, required=True,
                         help='This field cannot be left blank')

@@ -36,4 +36,5 @@ api.add_resource(Store, '/store/<string:name>')
 api.add_resource(StoreList, '/stores')
 
 if __name__ == '__main__':
+    # TODO: Add swagger integration
     app.run(debug=True)  # important to mention debug=True
