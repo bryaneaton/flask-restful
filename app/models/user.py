@@ -21,7 +21,7 @@ class UserModel(db.Model):
         db.session.commit()
 
     def check_password(self, password):
-        return hmac.compare_digest(password, "password")
+        return hmac.compare_digest(self.password, password)
 
     @classmethod
     def find_by_username(cls, username):

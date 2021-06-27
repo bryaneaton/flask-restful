@@ -4,6 +4,8 @@ from flask import jsonify
 from flask_jwt_extended import create_access_token, jwt_required
 from flask_jwt_extended import current_user
 from app.models.user import UserModel
+from app.util.encoder import AlchemyEncoder
+import json
 
 class User(Resource):
     parser = reqparse.RequestParser()  # only allow price changes, no name changes allowed
@@ -11,7 +13,6 @@ class User(Resource):
                         help='This field cannot be left blank')
     parser.add_argument('password', type=str, required=True,
                         help='This field cannot be left blank')
-
 
     def post(self):
         data = User.parser.parse_args()
@@ -22,7 +23,7 @@ class User(Resource):
         if not user or not user.check_password(password):
             return {'message': 'Wrong username or password.'}, 401
         # Notice that we are passing in the actual sqlalchemy user object here
-        access_token = create_access_token(identity=user)
+        access_token = create_access_token(identity=json.dumps(user, cls=AlchemyEncoder))
         return jsonify(access_token=access_token)
 
     @jwt_required()  # Requires dat token
@@ -35,11 +36,12 @@ class User(Resource):
         )
 
 
-
 class UserRegister(Resource):
     parser = reqparse.RequestParser()  # only allow price changes, no name changes allowed
-    parser.add_argument('username', type=str, required=True, help='This field cannot be left blank')
-    parser.add_argument('password', type=str, required=True, help='This field cannot be left blank')
+    parser.add_argument('username', type=str, required=True,
+                        help='This field cannot be left blank')
+    parser.add_argument('password', type=str, required=True,
+                        help='This field cannot be left blank')
 
     def post(self):
         data = UserRegister.parser.parse_args()
