@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 # standard python imports
 
-mssql = {'host': 'dbhost',
+mssql = {'host': 'database',
          'user': 'dbuser',
          'passwd': 'dbPwd',
          'db': 'db'}
 
-postgresql = {'host': '0.0.0.0',
+postgresql = {'host': 'database',
          'user': 'postgres',
          'passwd': 'magical_password',
          'db': 'db'}

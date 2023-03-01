@@ -11,13 +11,18 @@ on Udemy. https://www.udemy.com/course/rest-api-flask-and-python/learn/lecture/6
 
 ### Example endpoints
 #### Add user 
-`curl -d "username=user1&password=abcd" -X POST http://localhost:5000/register`
+`curl -X POST http://localhost:5000/register -H "Content-Type: application/json" -d '{"username": "luna", "password": "badgirl"}'`
 
 #### Login
 ###### _`(Returns Auth Token)`_
-`curl -d "username=user1&password=abcd" -X POST http://localhost:5000/user`
+`curl -X POST http://localhost:5000/user -H "Content-Type: application/json" -d '{"username": "luna", "password": "badgirl"}'`
 
-#### Add Item
+### Grab token in variable
+`export JWT=$(curl -s -X POST http://localhost:5000/user -H "Content-Type: application/json" -d @creds.json | jq .access_token)`
+
+#### Add Store
 ###### _`(Replace with Auth Token)`_
-`curl -XGET -d "store_id=1&price=2.309" \
- -H "Authorization: Bearer paste_token_here http://localhost:5000/item/xyz`
+`curl -X POST http://localhost:5000/store/xyz -H "Authorization: Bearer $JWT" -H "Content-Type: application/json" -H "Accepts: application/json" `
+
+### Add Item
+`curl -X POST http://localhost:5000/item/apple -H "Authorization: Bearer $JWT" -H "Content-Type: application/json" -H "Accepts: application/json" -d '{"store_id": 1, "price": "2.40"}'`

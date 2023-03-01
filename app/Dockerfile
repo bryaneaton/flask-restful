@@ -37,7 +37,7 @@ ENV PYTHONUNBUFFERED=1
 # activate virtual environment
 ENV VIRTUAL_ENV=/home/myuser/venv
 ENV PATH="/home/myuser/venv/bin:$PATH"
-ENV FLASK_APP=app:app.py
+ENV FLASK_APP=app
 ENV FLASK_ENV=development
 ENV FLASK_DEBUG=1
 # /dev/shm is mapped to shared memory and should be used for gunicorn heartbeat
