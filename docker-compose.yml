@@ -2,6 +2,7 @@ version: '3.7'
 services:
 
   app:
+    hostname: app    
     build: ./app
     restart: always
     ports:
@@ -10,6 +11,7 @@ services:
       - database
 
   database:
+    hostname: database
     image: postgres:latest # use latest official postgres version
     env_file:
       - postgres.env # configure postgres
