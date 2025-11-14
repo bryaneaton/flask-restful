@@ -24,6 +24,22 @@ api = Api(app)
 from app.db import db
 db.init_app(app)
 
+
+# JWT user loader callback
+@jwt.user_lookup_loader
+def user_lookup_callback(_jwt_header, jwt_data):
+    """Load user from JWT token identity."""
+    import json
+    from app.models.user import UserModel
+
+    identity = jwt_data["sub"]
+    try:
+        user_data = json.loads(identity)
+        return UserModel.find_by_id(user_data.get('id'))
+    except (json.JSONDecodeError, KeyError, TypeError):
+        return None
+
+
 # jwt = JWT(app, authenticate, identity)  # Auto Creates /auth endpoint
 
 api.add_resource(Item, '/item/<string:name>')

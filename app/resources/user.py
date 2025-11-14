@@ -40,7 +40,6 @@ class User(Resource):
         # We can now access our sqlalchemy User object via `current_user`.
         return jsonify(
             id=current_user.id,
-            full_name=current_user.full_name,
             username=current_user.username,
         )
 
