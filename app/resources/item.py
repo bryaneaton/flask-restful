@@ -1,74 +1,109 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # standard python imports
-from flask_restful import Resource, reqparse
+from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
 from app.models.item import ItemModel
 from app.util.logz import create_logger
 
+item_bp = Blueprint('item', __name__)
+logger = create_logger()
 
-class Item(Resource):
-    parser = reqparse.RequestParser()  # only allow price changes, no name changes allowed
-    parser.add_argument('price', type=float, required=True,
-                        help='This field cannot be left blank')
-    parser.add_argument('store_id', type=int, required=True,
-                        help='Must enter the store id')
 
-    def __init__(self):
-        self.logger = create_logger()
+@item_bp.route('/item/<string:name>', methods=['GET'])
+@jwt_required()
+def get_item(name):
+    """Get an item by name."""
+    item = ItemModel.find_by_name(name)
+    if item:
+        logger.info(f'returning item: {item.json()}')
+        return jsonify(item.json())
+    return jsonify({'message': 'Item not found'}), 404
 
-    @jwt_required()  # Requires dat token
-    def get(self, name):
-        item = ItemModel.find_by_name(name)
-        if item:
-            self.logger.info(f'returning item: {item.json()}')
-            return item.json()
-        return {'message': 'Item not found'}, 404
 
-    @jwt_required()
-    def post(self, name):
-        self.logger.info(f'parsed args: {Item.parser.parse_args()}')
+@item_bp.route('/item/<string:name>', methods=['POST'])
+@jwt_required()
+def create_item(name):
+    """Create a new item."""
+    data = request.get_json()
 
-        if ItemModel.find_by_name(name):
-            return {'message': "An item with name '{}' already exists.".format(
-                name)}, 400
-        data = Item.parser.parse_args()
-        item = ItemModel(name, data['price'], data['store_id'])
+    if not data:
+        return jsonify({'message': 'No input data provided'}), 400
 
-        try:
-            item.save_to_db()
-        except:
-            return {"message": "An error occurred inserting the item."}, 500
-        return item.json(), 201
+    # Validate required fields
+    if 'price' not in data:
+        return jsonify({'message': 'price field cannot be left blank'}), 400
+    if 'store_id' not in data:
+        return jsonify({'message': 'Must enter the store id'}), 400
 
-    @jwt_required()
-    def delete(self, name):
+    logger.info(f'parsed data: {data}')
 
-        item = ItemModel.find_by_name(name)
-        if item:
-            item.delete_from_db()
+    if ItemModel.find_by_name(name):
+        return jsonify({'message': f"An item with name '{name}' already exists."}), 400
 
-            return {'message': 'item has been deleted'}
+    try:
+        price = float(data['price'])
+        store_id = int(data['store_id'])
+    except (ValueError, TypeError):
+        return jsonify({'message': 'Invalid data types for price or store_id'}), 400
 
-    @jwt_required()
-    def put(self, name):
-        # Create or Update
-        data = Item.parser.parse_args()
-        item = ItemModel.find_by_name(name)
+    item = ItemModel(name, price, store_id)
 
-        if item is None:
-            item = ItemModel(name, data['price'], data['store_id'])
-        else:
-            item.price = data['price']
-
+    try:
         item.save_to_db()
+    except Exception as e:
+        logger.error(f'Error inserting item: {e}')
+        return jsonify({"message": "An error occurred inserting the item."}), 500
 
-        return item.json()
+    return jsonify(item.json()), 201
 
 
-class ItemList(Resource):
-    @jwt_required()
-    def get(self):
-        return {
-            'items': [item.json() for item in ItemModel.query.all()]}  # More pythonic
-        ##return {'items': list(map(lambda x: x.json(), ItemModel.query.all()))} #Alternate Lambda way
+@item_bp.route('/item/<string:name>', methods=['DELETE'])
+@jwt_required()
+def delete_item(name):
+    """Delete an item by name."""
+    item = ItemModel.find_by_name(name)
+    if item:
+        item.delete_from_db()
+
+    return jsonify({'message': 'item has been deleted'})
+
+
+@item_bp.route('/item/<string:name>', methods=['PUT'])
+@jwt_required()
+def update_item(name):
+    """Create or update an item."""
+    data = request.get_json()
+
+    if not data:
+        return jsonify({'message': 'No input data provided'}), 400
+
+    # Validate required fields
+    if 'price' not in data:
+        return jsonify({'message': 'price field cannot be left blank'}), 400
+    if 'store_id' not in data:
+        return jsonify({'message': 'Must enter the store id'}), 400
+
+    try:
+        price = float(data['price'])
+        store_id = int(data['store_id'])
+    except (ValueError, TypeError):
+        return jsonify({'message': 'Invalid data types for price or store_id'}), 400
+
+    item = ItemModel.find_by_name(name)
+
+    if item is None:
+        item = ItemModel(name, price, store_id)
+    else:
+        item.price = price
+
+    item.save_to_db()
+
+    return jsonify(item.json())
+
+
+@item_bp.route('/items', methods=['GET'])
+@jwt_required()
+def get_items():
+    """Get all items."""
+    return jsonify({'items': [item.json() for item in ItemModel.query.all()]})

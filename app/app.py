@@ -4,11 +4,10 @@
 
 from flask import Flask
 from flask_jwt_extended import JWTManager
-from flask_restful import Api
 
-from app.resources.item import Item, ItemList
-from app.resources.store import Store, StoreList
-from app.resources.user import UserRegister, User
+from app.resources.item import item_bp
+from app.resources.store import store_bp
+from app.resources.user import user_bp
 from app.config import postgresqlConfig
 
 app = Flask(__name__)
@@ -18,7 +17,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Setup the Flask-JWT-Extended extension
 app.config["JWT_SECRET_KEY"] = "Dese.Decent.Pups.BOOYO0OST"  # Change this!
 jwt = JWTManager(app)
-api = Api(app)
 
 # Initialize database
 from app.db import db
@@ -40,14 +38,10 @@ def user_lookup_callback(_jwt_header, jwt_data):
         return None
 
 
-# jwt = JWT(app, authenticate, identity)  # Auto Creates /auth endpoint
-
-api.add_resource(Item, '/item/<string:name>')
-api.add_resource(ItemList, '/items')
-api.add_resource(UserRegister, '/register')
-api.add_resource(User, '/user')
-api.add_resource(Store, '/store/<string:name>')
-api.add_resource(StoreList, '/stores')
+# Register blueprints
+app.register_blueprint(item_bp)
+app.register_blueprint(store_bp)
+app.register_blueprint(user_bp)
 
 if __name__ == '__main__':
     # Create database tables when running directly
