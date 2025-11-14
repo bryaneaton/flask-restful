@@ -16,6 +16,23 @@ HOST="0.0.0.0"
 DEBUG="true"
 USE_SQLITE=false
 
+# Get script directory
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+VENV_DIR="$SCRIPT_DIR/venv"
+
+# Check for local venv and activate if needed
+if [ -d "$VENV_DIR" ]; then
+    if [ -z "$VIRTUAL_ENV" ]; then
+        echo -e "${BLUE}[INFO]${NC} Activating local virtual environment: $VENV_DIR"
+        source "$VENV_DIR/bin/activate"
+    elif [ "$VIRTUAL_ENV" != "$VENV_DIR" ]; then
+        echo -e "${YELLOW}[WARNING]${NC} Different venv is active: $VIRTUAL_ENV"
+        echo -e "${BLUE}[INFO]${NC} Switching to local venv: $VENV_DIR"
+        deactivate 2>/dev/null || true
+        source "$VENV_DIR/bin/activate"
+    fi
+fi
+
 # Detect Python command (works with venv)
 if command -v python &> /dev/null; then
     PYTHON_CMD="python"
@@ -99,13 +116,16 @@ EOF
 # Function to check if we're in a virtual environment
 check_venv() {
     if [ -n "$VIRTUAL_ENV" ]; then
-        print_success "Virtual environment detected: $VIRTUAL_ENV"
+        if [ "$VIRTUAL_ENV" = "$VENV_DIR" ]; then
+            print_success "Using local virtual environment: venv/"
+        else
+            print_success "Using virtual environment: $VIRTUAL_ENV"
+        fi
         return 0
     else
-        print_warning "No virtual environment detected"
-        print_info "It's recommended to use a virtual environment:"
-        echo "  python3 -m venv venv"
-        echo "  source venv/bin/activate"
+        print_warning "No virtual environment found in project root"
+        print_info "Create one with: ./setup-venv.sh"
+        print_info "Or manually: python3 -m venv venv && source venv/bin/activate"
         echo ""
         return 1
     fi
@@ -267,5 +287,5 @@ echo -e "${YELLOW}────────────────────�
 echo ""
 
 # Run the Flask application
-cd "$(dirname "$0")"
+cd "$SCRIPT_DIR"
 $PYTHON_CMD -m flask run --host="$HOST" --port="$PORT"

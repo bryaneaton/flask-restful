@@ -30,6 +30,7 @@ Use the provided `run.sh` script for easy server management:
 
 ```bash
 # Start with SQLite (easiest for development)
+# Note: The script automatically activates ./venv if it exists
 ./run.sh --sqlite
 
 # Start with PostgreSQL (production)
@@ -44,6 +45,8 @@ Use the provided `run.sh` script for easy server management:
 # Show all options
 ./run.sh --help
 ```
+
+**Note:** The `run.sh` script automatically detects and activates the local `venv` directory in the project root. You don't need to manually activate it!
 
 ### 3. Using the API Client
 
