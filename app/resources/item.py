@@ -20,8 +20,8 @@ class Item(Resource):
     @jwt_required()  # Requires dat token
     def get(self, name):
         item = ItemModel.find_by_name(name)
-        self.logger.info(f'returning item: {item.json()}')
         if item:
+            self.logger.info(f'returning item: {item.json()}')
             return item.json()
         return {'message': 'Item not found'}, 404
 
@@ -57,7 +57,7 @@ class Item(Resource):
         item = ItemModel.find_by_name(name)
 
         if item is None:
-            item = ItemModel(name, data['price'])
+            item = ItemModel(name, data['price'], data['store_id'])
         else:
             item.price = data['price']
 

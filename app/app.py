@@ -20,12 +20,24 @@ app.config["JWT_SECRET_KEY"] = "Dese.Decent.Pups.BOOYO0OST"  # Change this!
 jwt = JWTManager(app)
 api = Api(app)
 
+# Initialize database
+from app.db import db
+db.init_app(app)
 
-@app.before_first_request
-def create_tables():
-    from app.db import db
-    db.init_app(app)
-    db.create_all()
+
+# JWT user loader callback
+@jwt.user_lookup_loader
+def user_lookup_callback(_jwt_header, jwt_data):
+    """Load user from JWT token identity."""
+    import json
+    from app.models.user import UserModel
+
+    identity = jwt_data["sub"]
+    try:
+        user_data = json.loads(identity)
+        return UserModel.find_by_id(user_data.get('id'))
+    except (json.JSONDecodeError, KeyError, TypeError):
+        return None
 
 
 # jwt = JWT(app, authenticate, identity)  # Auto Creates /auth endpoint
@@ -38,5 +50,8 @@ api.add_resource(Store, '/store/<string:name>')
 api.add_resource(StoreList, '/stores')
 
 if __name__ == '__main__':
+    # Create database tables when running directly
+    with app.app_context():
+        db.create_all()
     # TODO: Add swagger integration
     app.run(debug=True)  # important to mention debug=True
