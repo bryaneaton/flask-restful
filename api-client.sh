@@ -70,16 +70,29 @@ make_request() {
     local auth=$4
 
     if [ -n "$auth" ]; then
-        curl -s -X "$method" \
-             -H "Content-Type: application/json" \
-             -H "Authorization: Bearer $auth" \
-             -d "$data" \
-             "$SERVER$endpoint" | jq '.' 2>/dev/null || echo "Error: Invalid response"
+        if [ -n "$data" ]; then
+            curl -s -X "$method" \
+                 -H "Content-Type: application/json" \
+                 -H "Authorization: Bearer $auth" \
+                 -d "$data" \
+                 "$SERVER$endpoint" | jq '.' 2>/dev/null || echo "Error: Invalid response"
+        else
+            curl -s -X "$method" \
+                 -H "Content-Type: application/json" \
+                 -H "Authorization: Bearer $auth" \
+                 "$SERVER$endpoint" | jq '.' 2>/dev/null || echo "Error: Invalid response"
+        fi
     else
-        curl -s -X "$method" \
-             -H "Content-Type: application/json" \
-             -d "$data" \
-             "$SERVER$endpoint" | jq '.' 2>/dev/null || echo "Error: Invalid response"
+        if [ -n "$data" ]; then
+            curl -s -X "$method" \
+                 -H "Content-Type: application/json" \
+                 -d "$data" \
+                 "$SERVER$endpoint" | jq '.' 2>/dev/null || echo "Error: Invalid response"
+        else
+            curl -s -X "$method" \
+                 -H "Content-Type: application/json" \
+                 "$SERVER$endpoint" | jq '.' 2>/dev/null || echo "Error: Invalid response"
+        fi
     fi
 }
 
