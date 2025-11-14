@@ -243,6 +243,19 @@ else
     fi
 fi
 
+# Initialize database tables
+print_info "Initializing database tables..."
+$PYTHON_CMD -c "
+import sys
+sys.path.insert(0, '.')
+from app.app import app
+from app.db import db
+
+with app.app_context():
+    db.create_all()
+print('✓ Database tables ready')
+" 2>&1 | grep -E '✓|Error|Exception' || true
+
 # Print server configuration
 echo ""
 print_info "Server Configuration:"
