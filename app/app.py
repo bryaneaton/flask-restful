@@ -20,13 +20,9 @@ app.config["JWT_SECRET_KEY"] = "Dese.Decent.Pups.BOOYO0OST"  # Change this!
 jwt = JWTManager(app)
 api = Api(app)
 
-
-@app.before_first_request
-def create_tables():
-    from app.db import db
-    db.init_app(app)
-    db.create_all()
-
+# Initialize database
+from app.db import db
+db.init_app(app)
 
 # jwt = JWT(app, authenticate, identity)  # Auto Creates /auth endpoint
 
@@ -38,5 +34,8 @@ api.add_resource(Store, '/store/<string:name>')
 api.add_resource(StoreList, '/stores')
 
 if __name__ == '__main__':
+    # Create database tables when running directly
+    with app.app_context():
+        db.create_all()
     # TODO: Add swagger integration
     app.run(debug=True)  # important to mention debug=True
