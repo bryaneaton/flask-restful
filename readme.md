@@ -12,7 +12,19 @@ on Udemy. https://www.udemy.com/course/rest-api-flask-and-python/learn/lecture/6
 
 ## Quick Start
 
-### Start the Server
+### 1. Set Up Virtual Environment (Recommended)
+
+```bash
+# Create and activate virtual environment
+./setup-venv.sh
+
+# Or manually:
+python3 -m venv venv
+source venv/bin/activate
+pip install -r app/requirements.txt
+```
+
+### 2. Start the Server
 
 Use the provided `run.sh` script for easy server management:
 
@@ -33,7 +45,7 @@ Use the provided `run.sh` script for easy server management:
 ./run.sh --help
 ```
 
-### Using the API Client
+### 3. Using the API Client
 
 Use the `api-client.sh` helper script to interact with the API:
 

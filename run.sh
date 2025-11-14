@@ -16,6 +16,25 @@ HOST="0.0.0.0"
 DEBUG="true"
 USE_SQLITE=false
 
+# Detect Python command (works with venv)
+if command -v python &> /dev/null; then
+    PYTHON_CMD="python"
+elif command -v python3 &> /dev/null; then
+    PYTHON_CMD="python3"
+else
+    echo -e "${RED}[ERROR]${NC} Python not found. Please install Python 3."
+    exit 1
+fi
+
+# Detect pip command (works with venv)
+if command -v pip &> /dev/null; then
+    PIP_CMD="pip"
+elif command -v pip3 &> /dev/null; then
+    PIP_CMD="pip3"
+else
+    PIP_CMD="$PYTHON_CMD -m pip"
+fi
+
 # Function to print colored output
 print_info() {
     echo -e "${BLUE}[INFO]${NC} $1"
@@ -77,11 +96,26 @@ EOF
     exit 0
 }
 
+# Function to check if we're in a virtual environment
+check_venv() {
+    if [ -n "$VIRTUAL_ENV" ]; then
+        print_success "Virtual environment detected: $VIRTUAL_ENV"
+        return 0
+    else
+        print_warning "No virtual environment detected"
+        print_info "It's recommended to use a virtual environment:"
+        echo "  python3 -m venv venv"
+        echo "  source venv/bin/activate"
+        echo ""
+        return 1
+    fi
+}
+
 # Function to check if dependencies are installed
 check_dependencies() {
     print_info "Checking dependencies..."
 
-    if ! python3 -c "import flask" 2>/dev/null; then
+    if ! $PYTHON_CMD -c "import flask" 2>/dev/null; then
         print_warning "Flask not found. Installing dependencies..."
         install_dependencies
     else
@@ -92,14 +126,14 @@ check_dependencies() {
 # Function to install dependencies
 install_dependencies() {
     print_info "Installing dependencies from app/requirements.txt..."
-    python3 -m pip install -r app/requirements.txt --upgrade --quiet
+    $PIP_CMD install -r app/requirements.txt --upgrade --quiet
     print_success "Dependencies installed successfully"
 }
 
 # Function to run tests
 run_tests() {
     print_info "Running test suite..."
-    if DATABASE_URL="sqlite:///:memory:" python3 -m pytest tests/ -v --tb=short; then
+    if DATABASE_URL="sqlite:///:memory:" $PYTHON_CMD -m pytest tests/ -v --tb=short; then
         print_success "All tests passed!"
     else
         print_error "Tests failed. Aborting server start."
@@ -153,6 +187,14 @@ echo ""
 echo -e "${GREEN}╔════════════════════════════════════════╗${NC}"
 echo -e "${GREEN}║   Flask RESTful API Server Starter    ║${NC}"
 echo -e "${GREEN}╚════════════════════════════════════════╝${NC}"
+echo ""
+
+# Check virtual environment
+check_venv
+
+# Show Python info
+PYTHON_VERSION=$($PYTHON_CMD --version 2>&1)
+print_info "Using: $PYTHON_VERSION"
 echo ""
 
 # Install dependencies if requested
@@ -226,4 +268,4 @@ echo ""
 
 # Run the Flask application
 cd "$(dirname "$0")"
-python3 -m flask run --host="$HOST" --port="$PORT"
+$PYTHON_CMD -m flask run --host="$HOST" --port="$PORT"
