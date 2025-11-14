@@ -63,6 +63,11 @@ EOF
     exit 0
 }
 
+url_encode() {
+    local string="$1"
+    echo -n "$string" | jq -sRr @uri
+}
+
 make_request() {
     local method=$1
     local endpoint=$2
@@ -147,7 +152,8 @@ while [[ $# -gt 0 ]]; do
                 exit 1
             fi
             print_info "Creating store: $2"
-            make_request POST "/store/$2" "" "$TOKEN"
+            encoded_name=$(url_encode "$2")
+            make_request POST "/store/$encoded_name" "" "$TOKEN"
             exit 0
             ;;
         get-store)
@@ -156,7 +162,8 @@ while [[ $# -gt 0 ]]; do
                 exit 1
             fi
             print_info "Getting store: $2"
-            make_request GET "/store/$2"
+            encoded_name=$(url_encode "$2")
+            make_request GET "/store/$encoded_name"
             exit 0
             ;;
         delete-store)
@@ -169,7 +176,8 @@ while [[ $# -gt 0 ]]; do
                 exit 1
             fi
             print_info "Deleting store: $2"
-            make_request DELETE "/store/$2" "" "$TOKEN"
+            encoded_name=$(url_encode "$2")
+            make_request DELETE "/store/$encoded_name" "" "$TOKEN"
             exit 0
             ;;
         list-stores)
@@ -187,7 +195,8 @@ while [[ $# -gt 0 ]]; do
                 exit 1
             fi
             print_info "Creating item: $2"
-            make_request POST "/item/$2" "{\"price\":$3,\"store_id\":$4}" "$TOKEN"
+            encoded_name=$(url_encode "$2")
+            make_request POST "/item/$encoded_name" "{\"price\":$3,\"store_id\":$4}" "$TOKEN"
             exit 0
             ;;
         get-item)
@@ -200,7 +209,8 @@ while [[ $# -gt 0 ]]; do
                 exit 1
             fi
             print_info "Getting item: $2"
-            make_request GET "/item/$2" "" "$TOKEN"
+            encoded_name=$(url_encode "$2")
+            make_request GET "/item/$encoded_name" "" "$TOKEN"
             exit 0
             ;;
         update-item)
@@ -213,7 +223,8 @@ while [[ $# -gt 0 ]]; do
                 exit 1
             fi
             print_info "Updating item: $2"
-            make_request PUT "/item/$2" "{\"price\":$3,\"store_id\":$4}" "$TOKEN"
+            encoded_name=$(url_encode "$2")
+            make_request PUT "/item/$encoded_name" "{\"price\":$3,\"store_id\":$4}" "$TOKEN"
             exit 0
             ;;
         delete-item)
@@ -226,7 +237,8 @@ while [[ $# -gt 0 ]]; do
                 exit 1
             fi
             print_info "Deleting item: $2"
-            make_request DELETE "/item/$2" "" "$TOKEN"
+            encoded_name=$(url_encode "$2")
+            make_request DELETE "/item/$encoded_name" "" "$TOKEN"
             exit 0
             ;;
         list-items)
