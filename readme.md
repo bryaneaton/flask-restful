@@ -10,6 +10,53 @@ on Udemy. https://www.udemy.com/course/rest-api-flask-and-python/learn/lecture/6
 
 ✨ Now updated with Flask 3.1 and Flask-JWT-Extended 4.7!!  ✨
 
+## Quick Start
+
+### Start the Server
+
+Use the provided `run.sh` script for easy server management:
+
+```bash
+# Start with SQLite (easiest for development)
+./run.sh --sqlite
+
+# Start with PostgreSQL (production)
+./run.sh
+
+# Install dependencies and start with tests
+./run.sh --install-deps --run-tests --sqlite
+
+# Custom port and host
+./run.sh --sqlite --port 8080 --host 127.0.0.1
+
+# Show all options
+./run.sh --help
+```
+
+### Using the API Client
+
+Use the `api-client.sh` helper script to interact with the API:
+
+```bash
+# Register a new user
+./api-client.sh register john password123
+
+# Login and save token
+TOKEN=$(./api-client.sh login john password123 | jq -r '.access_token')
+
+# Create a store
+./api-client.sh --token "$TOKEN" create-store "Electronics"
+
+# Create an item
+./api-client.sh --token "$TOKEN" create-item "Laptop" 999.99 1
+
+# List all items
+./api-client.sh --token "$TOKEN" list-items
+
+# Show all commands
+./api-client.sh --help
+```
+
 ## Running Tests
 
 The project includes a comprehensive test suite with 96% code coverage.
@@ -28,7 +75,7 @@ pytest tests/ --cov=app --cov-report=term-missing
 pytest tests/test_models.py -v
 ```
 
-## Setup
+## Manual Setup
 
 ### Start Postgres or SQL Server db and update credentials on `config.py`
 * update `SQLALCHEMY_DATABASE_URI` in app.py with db config name

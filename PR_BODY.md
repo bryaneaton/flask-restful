@@ -37,6 +37,11 @@ Added comprehensive tests for:
 - Test fixtures use SQLite in-memory database for fast, isolated tests
 - Added pytest, pytest-flask, and pytest-cov dependencies
 
+### Developer Experience Improvements
+- **`run.sh`**: Comprehensive server startup script with options for SQLite/PostgreSQL, auto-install dependencies, run tests before starting
+- **`api-client.sh`**: Command-line API client helper for easy testing and interaction with all endpoints
+- Updated README with Quick Start guide and usage examples
+
 ## Test Results
 ```
 ============================== 62 passed in 0.87s ==============================
