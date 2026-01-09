@@ -5,7 +5,7 @@ Flask-JWT-Extended==4.7.1
 python-dateutil==2.9.0.post0
 pytz==2025.2
 SQLAlchemy==2.0.44
-Werkzeug==3.1.4
+Werkzeug==3.1.5
 psycopg2-binary==2.9.10
 rich==13.9.4
 pytest==8.3.4
